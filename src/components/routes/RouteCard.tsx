@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
-import { ArrowRight, MapPin } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ArrowRight, MapPin, MapPinned } from 'lucide-react';
 import Card from '../ui/Card';
 import Badge from '../ui/Badge';
+import { useMapFocus } from '../../contexts/MapContext';
 import type { Route } from '../../types';
 
 interface RouteCardProps {
@@ -9,7 +10,19 @@ interface RouteCardProps {
 }
 
 export default function RouteCard({ route }: RouteCardProps) {
+  const navigate = useNavigate();
+  const { setRouteFocus } = useMapFocus();
   const stopsCount = route.stops_count?.[0]?.count ?? route.stops?.length ?? 0;
+
+  const handleViewOnMap = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (route.stops && route.stops.length > 0) {
+      setRouteFocus(route.stops);
+      navigate('/');
+    }
+  };
 
   return (
     <Link to={`/routes/${route.id}`} className="block group">
@@ -41,9 +54,19 @@ export default function RouteCard({ route }: RouteCardProps) {
             </div>
           </div>
           
-          {/* Arrow indicator */}
-          <div className="w-10 h-10 rounded-xl bg-secondary-50 flex items-center justify-center text-secondary-600 group-hover:bg-secondary-600 group-hover:text-white transition-all duration-200 flex-shrink-0">
-            <ArrowRight className="w-5 h-5" />
+          {/* Actions */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={handleViewOnMap}
+              disabled={!route.stops || route.stops.length === 0}
+              className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600 hover:bg-primary-600 hover:text-white transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="View on Map"
+            >
+              <MapPinned className="w-5 h-5" />
+            </button>
+            <div className="w-10 h-10 rounded-xl bg-secondary-50 flex items-center justify-center text-secondary-600 group-hover:bg-secondary-600 group-hover:text-white transition-all duration-200">
+              <ArrowRight className="w-5 h-5" />
+            </div>
           </div>
         </div>
       </Card>

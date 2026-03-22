@@ -51,6 +51,32 @@ export function useRouteStops(routeId: string) {
   });
 }
 
+export function useRouteWithStops(routeId: string) {
+  return useQuery({
+    queryKey: ['routes', routeId, 'with-stops'],
+    queryFn: async () => {
+      const { data: route, error: routeError } = await supabase
+        .from('routes')
+        .select('*')
+        .eq('id', routeId)
+        .single();
+      
+      if (routeError) throw routeError;
+      
+      const { data: stops, error: stopsError } = await supabase
+        .from('stops')
+        .select('*')
+        .eq('route_id', routeId)
+        .order('sequence_order');
+      
+      if (stopsError) throw stopsError;
+      
+      return { route, stops: stops ?? [] };
+    },
+    enabled: !!routeId,
+  });
+}
+
 export function useBusLocations(refetchInterval = 30000) {
   return useQuery({
     queryKey: ['bus-locations'],
