@@ -12,7 +12,7 @@ export default function Home() {
   const { data: buses, refetch, isFetching } = useBusLocations(0);
   const { data: routes } = useRoutes();
   const { setBusFocus } = useMapFocus();
-  
+
   const activeBusesList = buses?.filter(b => b.latitude && b.longitude) ?? [];
   const activeBuses = activeBusesList.length;
   const totalRoutes = routes?.length ?? 0;
@@ -22,15 +22,15 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative text-white overflow-hidden">
         {/* Background Image */}
-        <img 
-          src="/assets/City Hall of Borongan in midday sun.png" 
-          alt="City Hall of Borongan" 
+        <img
+          src="/assets/City Hall of Borongan in midday sun.png"
+          alt="City Hall of Borongan"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        
+
         {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-700/90 via-primary-600/85 to-green-700/90" />
-        
+        <div className="absolute inset-0 bg-gradient-to-br from-green-700 to-white/60" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 relative">
           <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             {/* Left Content */}
@@ -39,17 +39,17 @@ export default function Home() {
                 <span className="w-2 h-2 bg-secondary-400 rounded-full animate-pulse"></span>
                 <span className="text-sm font-semibold text-white">Live Tracking Available</span>
               </div>
-              
+
               <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black mb-4 leading-tight">
                 Free Rides for{' '}
                 <span className="text-secondary-300">Everyone</span>
               </h1>
-              
+
               <p className="text-base sm:text-lg text-primary-100 mb-8 max-w-xl mx-auto lg:mx-0">
-                Libre Sakay provides <strong className="text-white">FREE transportation</strong> for Senior Citizens, 
+                Libre Sakay provides <strong className="text-white">FREE transportation</strong> for Senior Citizens,
                 Persons with Disabilities, and Students in Borongan City.
               </p>
-              
+
               {/* Eligibility Badges */}
               <div className="flex flex-wrap justify-center lg:justify-start gap-3 mb-8">
                 <span className="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-semibold">
@@ -62,7 +62,7 @@ export default function Home() {
                   Students
                 </span>
               </div>
-              
+
               <Link to="/routes">
                 <Button className="bg-secondary-600 hover:bg-secondary-700 text-white font-bold text-base px-8 py-4 shadow-xl">
                   View Routes <MapPin className="w-5 h-5 ml-2" />
@@ -73,9 +73,9 @@ export default function Home() {
             {/* Bus Image - Hidden on Mobile */}
             <div className="flex-1 relative hidden lg:block">
               <div className="relative z-10">
-                <img 
-                  src="/assets/libre-sakay.png" 
-                  alt="Libre Sakay Bus" 
+                <img
+                  src="/assets/libre-sakay.png"
+                  alt="Libre Sakay Bus"
                   className="w-full max-w-md mx-auto drop-shadow-2xl"
                 />
               </div>
@@ -88,17 +88,17 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
         {/* Quick Stats Cards */}
         <div className="grid grid-cols-3 gap-3 sm:gap-4">
-          <StatCard 
-            value={activeBuses} 
-            label="Active Buses" 
+          <StatCard
+            value={activeBuses}
+            label="Active Buses"
           />
-          <StatCard 
-            value={totalRoutes} 
-            label="Routes" 
+          <StatCard
+            value={totalRoutes}
+            label="Routes"
           />
-          <StatCard 
-            value="FREE" 
-            label="Always Free" 
+          <StatCard
+            value="FREE"
+            label="Always Free"
           />
         </div>
       </div>
@@ -121,8 +121,8 @@ export default function Home() {
                 Schedule
               </Button>
             </Link>
-            <Button 
-              onClick={() => refetch()} 
+            <Button
+              onClick={() => refetch()}
               disabled={isFetching}
               className="bg-primary-600 hover:bg-primary-700 text-white flex items-center gap-2"
             >
@@ -151,8 +151,8 @@ export default function Home() {
             ) : (
               <div className="space-y-2 max-h-[300px] sm:max-h-[400px] lg:max-h-[450px] overflow-y-auto">
                 {activeBusesList.map((bus) => (
-                  <HomeBusListItem 
-                    key={bus.id} 
+                  <HomeBusListItem
+                    key={bus.id}
                     bus={bus}
                     onClick={() => setBusFocus(bus)}
                   />
@@ -177,8 +177,8 @@ export default function Home() {
               Explore all available bus routes in Borongan City
             </p>
           </div>
-          <Link 
-            to="/routes" 
+          <Link
+            to="/routes"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary-100 text-primary-700 font-semibold rounded-full hover:bg-primary-200 transition-colors"
           >
             View All <MapPin className="w-4 h-4" />
@@ -192,9 +192,9 @@ export default function Home() {
         <Card className="p-6 sm:p-8 bg-gradient-to-r from-primary-50 to-secondary-50 border-primary-200">
           <div className="flex flex-col md:flex-row items-center gap-6">
             <div className="w-20 h-20 bg-primary-100 rounded-xl flex items-center justify-center flex-shrink-0">
-              <img 
-                src="/assets/Borongan City official seal design.png" 
-                alt="Borongan City" 
+              <img
+                src="/assets/Borongan City official seal design.png"
+                alt="Borongan City"
                 className="w-14 h-14 rounded-xl object-contain"
               />
             </div>
@@ -203,8 +203,8 @@ export default function Home() {
                 About Libre Sakay - Borongan City
               </h3>
               <p className="text-gray-600">
-                Libre Sakay is a government program by the City Government of Borongan and the 
-                Department of Agriculture that provides free transportation services to qualified 
+                Libre Sakay is a government program by the City Government of Borongan and the
+                Department of Agriculture that provides free transportation services to qualified
                 beneficiaries including Senior Citizens, Persons with Disabilities, and Students.
               </p>
             </div>
@@ -226,7 +226,7 @@ function StatCard({ value, label }: { value: string | number, label: string }) {
 
 function HomeBusListItem({ bus, onClick }: { bus: any; onClick?: () => void }) {
   const isMoving = (bus.speed ?? 0) > 5;
-  
+
   return (
     <button
       onClick={onClick}
@@ -234,7 +234,7 @@ function HomeBusListItem({ bus, onClick }: { bus: any; onClick?: () => void }) {
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div 
+          <div
             className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
             style={{ backgroundColor: isMoving ? '#16a34a' : '#e11d48' }}
           >
