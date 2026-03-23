@@ -2,43 +2,37 @@ import { Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import type { BusLocation } from '../../types';
 
-const movingIcon = new L.DivIcon({
-  className: 'bus-marker',
-  html: `<div style="
-    background: #16a34a;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid white;
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.4);
-  ">
-    <span style="font-size: 20px;">🚌</span>
-  </div>`,
-  iconSize: [40, 40],
-  iconAnchor: [20, 20],
-});
+// Convert heading (0-360) to compass direction
+function getCardinalDirection(heading: number): string {
+  if (heading === null || heading === undefined) return '';
+  const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  const index = Math.round(heading / 45) % 8;
+  return directions[index];
+}
 
-const parkedIcon = new L.DivIcon({
-  className: 'bus-marker',
-  html: `<div style="
-    background: #e11d48;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid white;
-    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.4);
-  ">
-    <span style="font-size: 16px;">🅿️</span>
-  </div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 18],
-});
+const createBusIcon = (isMoving: boolean, busId: string) => {
+  const size = 36;
+  const bgColor = isMoving ? '#16a34a' : '#e11d48';
+  
+  return new L.DivIcon({
+    className: 'bus-marker',
+    html: `<div style="
+      background: ${bgColor};
+      width: ${size}px;
+      height: ${size}px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+    ">
+      <span style="color: white; font-size: 12px; font-weight: bold;">${busId}</span>
+    </div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+  });
+};
 
 interface BusMarkerProps {
   busLocation: BusLocation;
@@ -46,9 +40,20 @@ interface BusMarkerProps {
 
 export default function BusMarker({ busLocation }: BusMarkerProps) {
   const isMoving = busLocation.speed > 5;
-  const icon = isMoving ? movingIcon : parkedIcon;
-  const routeName = busLocation.bus?.route?.name ?? 'Unknown Route';
-  const plateNumber = busLocation.bus?.plate_number ?? 'N/A';
+  const busData = busLocation.bus;
+  const plateNumber = busData?.plate_number ?? 'N/A';
+  const icon = createBusIcon(isMoving, plateNumber);
+  const direction = getCardinalDirection(busLocation.heading ?? 0);
+  
+  // Handle routes data - support different response formats
+  const routesData = busData?.routes as unknown;
+  let routeName = 'Unknown Route';
+  
+  if (Array.isArray(routesData) && routesData.length > 0) {
+    routeName = routesData[0].name ?? 'Unknown Route';
+  } else if (routesData && typeof routesData === 'object' && 'name' in routesData) {
+    routeName = (routesData as { name: string }).name;
+  }
 
   return (
     <Marker
@@ -60,8 +65,13 @@ export default function BusMarker({ busLocation }: BusMarkerProps) {
           <p className="font-bold text-gray-900">{plateNumber}</p>
           <p className="text-sm text-gray-600">Route: {routeName}</p>
           <p className="text-sm font-semibold" style={{ color: isMoving ? '#16a34a' : '#e11d48' }}>
-            {isMoving ? `Moving (${busLocation.speed.toFixed(1)} km/h)` : 'Parked/At Stop'}
+            {isMoving ? `Moving (${(busLocation.speed ?? 0).toFixed(1)} km/h)` : 'Parked/At Stop'}
           </p>
+          {direction && isMoving && (
+            <p className="text-xs text-gray-500 mt-1">
+              Direction: {direction}
+            </p>
+          )}
           <p className="text-xs text-gray-400 mt-1">
             Updated: {new Date(busLocation.recorded_at).toLocaleTimeString()}
           </p>

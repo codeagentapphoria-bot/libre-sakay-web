@@ -30,10 +30,21 @@ export interface BusLocation {
   bus_id: string;
   latitude: number;
   longitude: number;
+  altitude?: number;
   speed: number;
-  heading: number;
+  heading?: number;
+  accuracy?: number;
   recorded_at: string;
-  bus?: Bus;
+  current_geofence_id?: string;
+  bus?: {
+    id: string;
+    plate_number: string;
+    route_id?: string;
+    routes?: {
+      id: string;
+      name: string;
+    }[];
+  };
 }
 
 export type BusStatus = 'moving' | 'parked' | 'at_stop';

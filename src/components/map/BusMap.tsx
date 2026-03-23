@@ -4,7 +4,7 @@ import L from 'leaflet';
 import { useBusLocations } from '../../api/queries';
 import BusMarker from './BusMarker';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { MapPin } from 'lucide-react';
+import { MapPin, ZoomIn, ZoomOut } from 'lucide-react';
 import { useMapFocus } from '../../contexts/MapContext';
 import type { Stop } from '../../types';
 import 'leaflet/dist/leaflet.css';
@@ -13,7 +13,6 @@ const BORONGAN_CENTER: [number, number] = [11.5077, 125.4377];
 const DEFAULT_ZOOM = 13;
 
 interface BusMapProps {
-  showRefreshButton?: boolean;
   height?: string;
 }
 
@@ -46,7 +45,7 @@ function MapController() {
 
   useEffect(() => {
     if (focus.center) {
-      const focusKey = `${focus.center[0]}-${focus.center[1]}-${focus.zoom}-${focus.routeFocus.stops?.length}`;
+      const focusKey = `${focus.center[0]}-${focus.center[1]}-${focus.zoom}-${focus.routeFocus.stops?.length}-${focus.selectedBus?.id}`;
       if (prevFocusRef.current !== focusKey) {
         map.flyTo(focus.center, focus.zoom ?? 15, { duration: 1 });
         prevFocusRef.current = focusKey;
@@ -55,6 +54,37 @@ function MapController() {
   }, [focus, map, clearMapFocus]);
 
   return null;
+}
+
+function MapControlsInternal() {
+  const map = useMap();
+
+  const handleZoomIn = () => {
+    map.zoomIn();
+  };
+
+  const handleZoomOut = () => {
+    map.zoomOut();
+  };
+
+  return (
+    <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+      <button
+        onClick={handleZoomIn}
+        className="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+        title="Zoom In"
+      >
+        <ZoomIn className="w-5 h-5 text-gray-700" />
+      </button>
+      <button
+        onClick={handleZoomOut}
+        className="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+        title="Zoom Out"
+      >
+        <ZoomOut className="w-5 h-5 text-gray-700" />
+      </button>
+    </div>
+  );
 }
 
 function RouteStops({ stops }: { stops: Stop[] }) {
@@ -88,8 +118,8 @@ function RouteStops({ stops }: { stops: Stop[] }) {
   );
 }
 
-export default function BusMap({ showRefreshButton: _showRefreshButton = true, height = '100%' }: BusMapProps) {
-  const { data: buses, isLoading, refetch: _refetch, isFetching: _isFetching } = useBusLocations(0);
+export default function BusMap({ height = '100%' }: BusMapProps) {
+  const { data: buses, isLoading } = useBusLocations(0);
   const { focus } = useMapFocus();
   const activeBuses = buses?.filter(b => b.latitude && b.longitude) ?? [];
   const routeStops = focus.routeFocus.stops;
@@ -102,6 +132,7 @@ export default function BusMap({ showRefreshButton: _showRefreshButton = true, h
         style={{ height: '100%', width: '100%' }}
         className="z-0"
         attributionControl={false}
+        zoomControl={false}
       >
         <MapController />
         <TileLayer
@@ -124,9 +155,10 @@ export default function BusMap({ showRefreshButton: _showRefreshButton = true, h
             </div>
           </div>
         )}
+
+        {/* Map Controls - inside MapContainer */}
+        <MapControlsInternal />
       </MapContainer>
-
-
 
       {isLoading && (
         <div className="absolute inset-0 bg-white flex items-center justify-center z-[1000]">

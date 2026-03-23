@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import type { Stop } from '../types';
+import type { Stop, BusLocation } from '../types';
 
 interface RouteFocusState {
   stops: Stop[] | null;
@@ -9,12 +9,14 @@ interface MapFocusState {
   center: [number, number] | null;
   zoom: number | null;
   routeFocus: RouteFocusState;
+  selectedBus: BusLocation | null;
 }
 
 interface MapContextType {
   focus: MapFocusState;
   setMapFocus: (center: [number, number], zoom?: number) => void;
   setRouteFocus: (stops: Stop[]) => void;
+  setBusFocus: (bus: BusLocation) => void;
   clearMapFocus: () => void;
 }
 
@@ -24,11 +26,12 @@ export function MapProvider({ children }: { children: ReactNode }) {
   const [focus, setFocus] = useState<MapFocusState>({ 
     center: null, 
     zoom: null,
-    routeFocus: { stops: null }
+    routeFocus: { stops: null },
+    selectedBus: null
   });
 
   const setMapFocus = useCallback((center: [number, number], zoom: number = 15) => {
-    setFocus({ center, zoom, routeFocus: { stops: null } });
+    setFocus({ center, zoom, routeFocus: { stops: null }, selectedBus: null });
   }, []);
 
   const setRouteFocus = useCallback((stops: Stop[]) => {
@@ -42,16 +45,27 @@ export function MapProvider({ children }: { children: ReactNode }) {
     setFocus({ 
       center: [centerLat, centerLng], 
       zoom: 14,
-      routeFocus: { stops }
+      routeFocus: { stops },
+      selectedBus: null
+    });
+  }, []);
+
+  const setBusFocus = useCallback((bus: BusLocation) => {
+    if (!bus.latitude || !bus.longitude) return;
+    setFocus({
+      center: [bus.latitude, bus.longitude],
+      zoom: 16,
+      routeFocus: { stops: null },
+      selectedBus: bus
     });
   }, []);
 
   const clearMapFocus = useCallback(() => {
-    setFocus({ center: null, zoom: null, routeFocus: { stops: null } });
+    setFocus({ center: null, zoom: null, routeFocus: { stops: null }, selectedBus: null });
   }, []);
 
   return (
-    <MapContext.Provider value={{ focus, setMapFocus, setRouteFocus, clearMapFocus }}>
+    <MapContext.Provider value={{ focus, setMapFocus, setRouteFocus, setBusFocus, clearMapFocus }}>
       {children}
     </MapContext.Provider>
   );
