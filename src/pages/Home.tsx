@@ -4,16 +4,18 @@ import RouteList from '../components/routes/RouteList';
 import Button from '../components/ui/Button';
 import Card from '../components/ui/Card';
 import { useBusLocations, useRoutes } from '../api/queries';
-import { MapPin, RefreshCw } from 'lucide-react';
+import { MapPin, RefreshCw, Calendar, Navigation } from 'lucide-react';
 import BusMap from '../components/map/BusMap';
+import { useMapFocus } from '../contexts/MapContext';
 
 export default function Home() {
   const { data: buses, refetch, isFetching } = useBusLocations(0);
   const { data: routes } = useRoutes();
+  const { setBusFocus } = useMapFocus();
   
-  const activeBuses = buses?.filter(b => b.latitude && b.longitude).length ?? 0;
+  const activeBusesList = buses?.filter(b => b.latitude && b.longitude) ?? [];
+  const activeBuses = activeBusesList.length;
   const totalRoutes = routes?.length ?? 0;
-  const totalStops = routes?.reduce((acc, route) => acc + (route.stops_count?.[0]?.count ?? 0), 0) ?? 0;
 
   return (
     <div className="pb-12">
@@ -84,8 +86,8 @@ export default function Home() {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 relative z-10">
-        {/* Quick Stats Cards - Without Icons */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {/* Quick Stats Cards */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4">
           <StatCard 
             value={activeBuses} 
             label="Active Buses" 
@@ -93,10 +95,6 @@ export default function Home() {
           <StatCard 
             value={totalRoutes} 
             label="Routes" 
-          />
-          <StatCard 
-            value={totalStops} 
-            label="Bus Stops" 
           />
           <StatCard 
             value="FREE" 
@@ -116,18 +114,51 @@ export default function Home() {
               Tap refresh to see current bus locations
             </p>
           </div>
-          <Button 
-            onClick={() => refetch()} 
-            disabled={isFetching}
-            className="bg-primary-600 hover:bg-primary-700 text-white flex items-center gap-2"
-          >
-            <RefreshCw className={clsx("w-4 h-4", isFetching && "animate-spin")} />
-            Refresh Location
-          </Button>
+          <div className="flex gap-2">
+            <Link to="/schedule">
+              <Button className="bg-secondary-600 hover:bg-secondary-700 text-white flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                Schedule
+              </Button>
+            </Link>
+            <Button 
+              onClick={() => refetch()} 
+              disabled={isFetching}
+              className="bg-primary-600 hover:bg-primary-700 text-white flex items-center gap-2"
+            >
+              <RefreshCw className={clsx("w-4 h-4", isFetching && "animate-spin")} />
+              Refresh Location
+            </Button>
+          </div>
         </div>
-        <div className="rounded-2xl overflow-hidden shadow-lg border-4 border-white">
-          <div className="h-[300px] sm:h-[400px] lg:h-[450px]">
-            <BusMap />
+        <div className="flex flex-col lg:flex-row gap-4">
+          {/* Map - 80% */}
+          <div className="flex-1 rounded-2xl overflow-hidden shadow-lg border-4 border-white">
+            <div className="h-[300px] sm:h-[400px] lg:h-[450px]">
+              <BusMap />
+            </div>
+          </div>
+
+          {/* Bus List - 20% */}
+          <div className="w-full lg:w-1/5 space-y-3">
+            <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-1">
+              Active Buses ({activeBusesList.length})
+            </h3>
+            {activeBusesList.length === 0 ? (
+              <div className="bg-gray-50 rounded-xl p-4 text-center">
+                <p className="text-sm text-gray-500">No buses currently tracked</p>
+              </div>
+            ) : (
+              <div className="space-y-2 max-h-[300px] sm:max-h-[400px] lg:max-h-[450px] overflow-y-auto">
+                {activeBusesList.map((bus) => (
+                  <HomeBusListItem 
+                    key={bus.id} 
+                    bus={bus}
+                    onClick={() => setBusFocus(bus)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
         <p className="text-sm text-gray-500 mt-3 text-center bg-yellow-50 py-2 px-4 rounded-lg inline-block mx-auto">
@@ -190,5 +221,34 @@ function StatCard({ value, label }: { value: string | number, label: string }) {
       <p className="text-3xl sm:text-4xl font-black text-primary-600 mb-1">{value}</p>
       <p className="text-sm sm:text-base text-gray-600 font-medium">{label}</p>
     </div>
+  );
+}
+
+function HomeBusListItem({ bus, onClick }: { bus: any; onClick?: () => void }) {
+  const isMoving = (bus.speed ?? 0) > 5;
+  
+  return (
+    <button
+      onClick={onClick}
+      className="w-full text-left p-3 bg-white rounded-xl border border-gray-100 hover:border-primary-200 hover:shadow-md transition-all"
+    >
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div 
+            className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+            style={{ backgroundColor: isMoving ? '#16a34a' : '#e11d48' }}
+          >
+            {bus.bus?.plate_number ?? 'N/A'}
+          </div>
+          <div>
+            <p className="font-semibold text-gray-900 text-sm">{bus.bus?.plate_number}</p>
+            <p className="text-xs text-gray-500">
+              {isMoving ? `${(bus.speed ?? 0).toFixed(1)} km/h` : 'Parked'}
+            </p>
+          </div>
+        </div>
+        <Navigation className="w-4 h-4 text-gray-400" />
+      </div>
+    </button>
   );
 }
