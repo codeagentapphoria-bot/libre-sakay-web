@@ -11,10 +11,10 @@ export default function Routes() {
             <MapPin className="w-6 h-6 text-primary-600" />
           </div>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-heading-700">
               Bus Routes
             </h1>
-            <p className="text-gray-500 text-sm sm:text-base">
+            <p className="text-heading-500 text-sm sm:text-base">
               All available routes in Borongan City
             </p>
           </div>

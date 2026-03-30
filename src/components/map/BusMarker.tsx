@@ -62,17 +62,17 @@ export default function BusMarker({ busLocation }: BusMarkerProps) {
     >
       <Popup>
         <div className="p-1">
-          <p className="font-bold text-gray-900">{plateNumber}</p>
-          <p className="text-sm text-gray-600">Route: {routeName}</p>
+          <p className="font-bold text-heading-700">{plateNumber}</p>
+          <p className="text-sm text-heading-600">Route: {routeName}</p>
           <p className="text-sm font-semibold" style={{ color: isMoving ? '#16a34a' : '#e11d48' }}>
             {isMoving ? `Moving (${(busLocation.speed ?? 0).toFixed(1)} km/h)` : 'Parked/At Stop'}
           </p>
           {direction && isMoving && (
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-heading-500 mt-1">
               Direction: {direction}
             </p>
           )}
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-heading-400 mt-1">
             Updated: {new Date(busLocation.recorded_at).toLocaleTimeString()}
           </p>
         </div>

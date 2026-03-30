@@ -29,7 +29,7 @@ export default function RouteDetailPage() {
   if (!route) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8 text-center">
-        <p className="text-gray-600">Route not found.</p>
+        <p className="text-heading-600">Route not found.</p>
         <Link to="/routes">
           <Button variant="secondary" className="mt-4">Back to Routes</Button>
         </Link>
@@ -73,7 +73,7 @@ export default function RouteDetailPage() {
       {/* Back Link */}
       <Link 
         to="/routes" 
-        className="group inline-flex items-center gap-3 text-gray-500 hover:text-primary-600 mb-6 transition-colors font-semibold"
+        className="group inline-flex items-center gap-3 text-heading-500 hover:text-primary-600 mb-6 transition-colors font-semibold"
       >
         <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-primary-100 group-hover:text-primary-600 transition-all">
           <ArrowLeft className="w-4 h-4" />
@@ -89,16 +89,16 @@ export default function RouteDetailPage() {
           </Badge>
           <span className="text-sm text-gray-400">Route</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+        <h1 className="text-3xl sm:text-4xl font-bold text-heading-900 mb-2">
           {route.name}
         </h1>
         {route.description && (
-          <p className="text-gray-600 text-lg">{route.description}</p>
+          <p className="text-heading-600 text-lg">{route.description}</p>
         )}
         
         {/* Quick Info */}
         <div className="flex flex-wrap gap-4 mt-4">
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex items-center gap-2 text-heading-600">
             <BusIcon className="w-5 h-5 text-primary-600" />
             <span className="font-semibold">{busesOnRoute.length} Active Buses</span>
           </div>
@@ -149,12 +149,12 @@ export default function RouteDetailPage() {
 
             {/* Bus List - 20% */}
             <div className="w-full lg:w-1/5 space-y-3">
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-1">
+              <h3 className="text-sm font-semibold text-heading-500 uppercase tracking-wide px-1">
                 Active Buses ({busesOnRoute.length})
               </h3>
               {busesOnRoute.length === 0 ? (
                 <div className="bg-gray-50 rounded-xl p-4 text-center">
-                  <p className="text-sm text-gray-500">No buses on this route</p>
+                  <p className="text-sm text-heading-500">No buses on this route</p>
                 </div>
               ) : (
                 <div className="space-y-2 max-h-[400px] lg:max-h-[500px] overflow-y-auto">
@@ -169,7 +169,7 @@ export default function RouteDetailPage() {
               )}
             </div>
           </div>
-          <p className="text-sm text-gray-500 text-center">
+          <p className="text-sm text-heading-500 text-center">
             Showing real-time bus locations on this route
           </p>
         </div>
@@ -179,20 +179,20 @@ export default function RouteDetailPage() {
         <div className="space-y-6">
           {routeSchedule ? (
             <Card className="p-6 border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-heading-900 mb-4 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-primary-600" />
                 Schedule for {route.name}
               </h3>
               
               {routeSchedule.weekday.length > 0 && (
                 <div className="mb-6">
-                  <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  <h4 className="text-sm font-semibold text-heading-500 uppercase tracking-wide mb-3">
                     Monday - Thursday
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                     {routeSchedule.weekday.map((entry) => (
                       <div key={entry.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-900">{entry.time}</span>
+                        <span className="text-sm font-medium text-heading-900">{entry.time}</span>
                         <Badge variant="neutral" className="text-xs">{entry.busId}</Badge>
                       </div>
                     ))}
@@ -202,13 +202,13 @@ export default function RouteDetailPage() {
 
               {routeSchedule.weekend.length > 0 && (
                 <div>
-                  <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">
+                  <h4 className="text-sm font-semibold text-heading-500 uppercase tracking-wide mb-3">
                     Friday - Saturday
                   </h4>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2">
                     {routeSchedule.weekend.map((entry) => (
                       <div key={entry.id} className="flex items-center justify-between px-3 py-2 bg-gray-50 rounded-lg">
-                        <span className="text-sm font-medium text-gray-900">{entry.time}</span>
+                        <span className="text-sm font-medium text-heading-900">{entry.time}</span>
                         <Badge variant="neutral" className="text-xs">{entry.busId}</Badge>
                       </div>
                     ))}
@@ -227,8 +227,8 @@ export default function RouteDetailPage() {
           ) : (
             <Card className="p-8 text-center border-gray-100">
               <Clock className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">No Schedule Available</h3>
-              <p className="text-gray-500 mb-4">This route doesn't have a fixed schedule yet.</p>
+              <h3 className="text-lg font-bold text-heading-900 mb-2">No Schedule Available</h3>
+              <p className="text-heading-500 mb-4">This route doesn't have a fixed schedule yet.</p>
               <Link to="/schedule">
                 <Button variant="outline">View All Schedules</Button>
               </Link>
@@ -242,8 +242,8 @@ export default function RouteDetailPage() {
           {busesOnRoute.length === 0 ? (
             <Card className="p-8 text-center border-gray-100">
               <BusIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-gray-900 mb-2">No Active Buses</h3>
-              <p className="text-gray-500">There are currently no buses on this route.</p>
+              <h3 className="text-lg font-bold text-heading-900 mb-2">No Active Buses</h3>
+              <p className="text-heading-500">There are currently no buses on this route.</p>
             </Card>
           ) : (
             <div className="grid gap-4">
@@ -255,8 +255,8 @@ export default function RouteDetailPage() {
                         <BusIcon className="w-7 h-7 text-primary-600" />
                       </div>
                       <div>
-                        <p className="font-bold text-lg text-gray-900">{bus.bus?.plate_number}</p>
-                        <p className="text-sm text-gray-500">
+                        <p className="font-bold text-lg text-heading-900">{bus.bus?.plate_number}</p>
+                        <p className="text-sm text-heading-500">
                           {bus.bus?.routes?.[0]?.name || 'On Route'}
                         </p>
                       </div>
@@ -265,7 +265,7 @@ export default function RouteDetailPage() {
                       <Badge variant={(bus.speed ?? 0) > 5 ? 'success' : 'secondary'} className="mb-1">
                         {(bus.speed ?? 0) > 5 ? 'In Transit' : 'At Stop'}
                       </Badge>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-heading-500">
                         {(bus.speed ?? 0).toFixed(1)} km/h
                       </p>
                     </div>
@@ -297,6 +297,7 @@ export default function RouteDetailPage() {
 
 function BusListItem({ bus, onClick }: { bus: any; onClick?: () => void }) {
   const isMoving = (bus.speed ?? 0) > 5;
+  const barangayName = bus.barangay?.name;
   
   return (
     <button
@@ -312,9 +313,10 @@ function BusListItem({ bus, onClick }: { bus: any; onClick?: () => void }) {
             {bus.bus?.plate_number ?? 'N/A'}
           </div>
           <div>
-            <p className="font-semibold text-gray-900 text-sm">{bus.bus?.plate_number}</p>
-            <p className="text-xs text-gray-500">
+            <p className="font-semibold text-heading-900 text-sm">{bus.bus?.plate_number}</p>
+            <p className="text-xs text-heading-500">
               {isMoving ? `${(bus.speed ?? 0).toFixed(1)} km/h` : 'Parked'}
+              {barangayName && <span className="ml-1 text-primary-600">• {barangayName}</span>}
             </p>
           </div>
         </div>
@@ -341,7 +343,7 @@ function TabButton({
       className={`flex items-center gap-2 px-4 py-3 font-semibold border-b-2 transition-colors whitespace-nowrap ${
         active 
           ? 'border-primary-600 text-primary-600' 
-          : 'border-transparent text-gray-500 hover:text-gray-700'
+          : 'border-transparent text-heading-500 hover:text-gray-700'
       }`}
     >
       {icon}

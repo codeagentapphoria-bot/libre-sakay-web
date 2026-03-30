@@ -178,10 +178,13 @@ export function useBusLocations(refetchInterval = 30000) {
   return useQuery({
     queryKey: ['bus-locations'],
     queryFn: async () => {
-      // Step 1: Get latest location per bus
+      // Step 1: Get latest location per bus with barangay info
       const { data: locations, error: locError } = await supabase
         .from('bus_locations')
-        .select('*')
+        .select(`
+          *,
+          barangay:barangays(id, name)
+        `)
         .order('recorded_at', { ascending: false });
       
       if (locError) throw locError;

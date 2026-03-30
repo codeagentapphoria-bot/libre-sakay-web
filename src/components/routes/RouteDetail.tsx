@@ -11,7 +11,7 @@ interface RouteDetailProps {
 export default function RouteDetail({ stops, currentStopId }: RouteDetailProps) {
   if (!stops || stops.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-heading-500">
         No stops available for this route.
       </div>
     );
@@ -42,8 +42,8 @@ export default function RouteDetail({ stops, currentStopId }: RouteDetailProps) 
                 : isFirst 
                   ? "bg-green-500 text-white"
                   : isLast 
-                    ? "bg-gray-800 text-white"
-                    : "bg-gray-200 text-gray-600"
+                    ? "bg-heading-800 text-white"
+                    : "bg-gray-200 text-heading-600"
             )}>
               {index + 1}
             </div>
@@ -56,7 +56,7 @@ export default function RouteDetail({ stops, currentStopId }: RouteDetailProps) 
               </div>
               <p className={clsx(
                 "font-semibold text-base",
-                isCurrentStop ? "text-primary-700" : "text-gray-900"
+                isCurrentStop ? "text-primary-700" : "text-heading-700"
               )}>
                 {stop.name}
               </p>

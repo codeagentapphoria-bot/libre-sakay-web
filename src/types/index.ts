@@ -36,6 +36,11 @@ export interface BusLocation {
   accuracy?: number;
   recorded_at: string;
   current_geofence_id?: string;
+  current_barangay_id?: string;
+  barangay?: {
+    id: string;
+    name: string;
+  };
   bus?: {
     id: string;
     plate_number: string;
