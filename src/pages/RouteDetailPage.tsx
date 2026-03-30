@@ -7,6 +7,7 @@ import Button from '../components/ui/Button';
 import Badge from '../components/ui/Badge';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import BusMap from '../components/map/BusMap';
+import BusDetailModal from '../components/ui/BusDetailModal';
 import { useMapFocus } from '../contexts/MapContext';
 
 type TabType = 'map' | 'schedule' | 'buses';
@@ -16,7 +17,9 @@ export default function RouteDetailPage() {
   const { data: route, isLoading: routeLoading } = useRoute(id!);
   const { data: busLocations } = useBusLocations(0);
   const [activeTab, setActiveTab] = useState<TabType>('map');
-  const { setBusFocus } = useMapFocus();
+  const { focus, setBusFocus, clearSelectedBus } = useMapFocus();
+  const userLocation = focus.userLocation;
+  const selectedBus = focus.selectedBus;
 
   if (routeLoading) {
     return (
@@ -291,6 +294,14 @@ export default function RouteDetailPage() {
           stops when passengers are waiting. Schedule times are approximate.
         </p>
       </div>
+
+      {selectedBus && (
+        <BusDetailModal
+          bus={selectedBus}
+          userLocation={userLocation}
+          onClose={clearSelectedBus}
+        />
+      )}
     </div>
   );
 }
