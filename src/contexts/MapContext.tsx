@@ -10,6 +10,7 @@ interface MapFocusState {
   zoom: number | null;
   routeFocus: RouteFocusState;
   selectedBus: BusLocation | null;
+  userLocation: [number, number] | null;
 }
 
 interface MapContextType {
@@ -17,6 +18,8 @@ interface MapContextType {
   setMapFocus: (center: [number, number], zoom?: number) => void;
   setRouteFocus: (stops: Stop[]) => void;
   setBusFocus: (bus: BusLocation) => void;
+  setUserLocation: (location: [number, number] | null) => void;
+  clearSelectedBus: () => void;
   clearMapFocus: () => void;
 }
 
@@ -27,11 +30,12 @@ export function MapProvider({ children }: { children: ReactNode }) {
     center: null, 
     zoom: null,
     routeFocus: { stops: null },
-    selectedBus: null
+    selectedBus: null,
+    userLocation: null
   });
 
   const setMapFocus = useCallback((center: [number, number], zoom: number = 15) => {
-    setFocus({ center, zoom, routeFocus: { stops: null }, selectedBus: null });
+    setFocus(prev => ({ ...prev, center, zoom, routeFocus: { stops: null }, selectedBus: null }));
   }, []);
 
   const setRouteFocus = useCallback((stops: Stop[]) => {
@@ -42,30 +46,40 @@ export function MapProvider({ children }: { children: ReactNode }) {
     const centerLat = (Math.min(...lats) + Math.max(...lats)) / 2;
     const centerLng = (Math.min(...lngs) + Math.max(...lngs)) / 2;
     
-    setFocus({ 
+    setFocus(prev => ({ 
+      ...prev,
       center: [centerLat, centerLng], 
       zoom: 14,
       routeFocus: { stops },
       selectedBus: null
-    });
+    }));
   }, []);
 
   const setBusFocus = useCallback((bus: BusLocation) => {
     if (!bus.latitude || !bus.longitude) return;
-    setFocus({
+    setFocus(prev => ({
+      ...prev,
       center: [bus.latitude, bus.longitude],
       zoom: 16,
       routeFocus: { stops: null },
       selectedBus: bus
-    });
+    }));
+  }, []);
+
+  const setUserLocation = useCallback((location: [number, number] | null) => {
+    setFocus(prev => ({ ...prev, userLocation: location }));
   }, []);
 
   const clearMapFocus = useCallback(() => {
-    setFocus({ center: null, zoom: null, routeFocus: { stops: null }, selectedBus: null });
+    setFocus(prev => ({ ...prev, center: null, zoom: null, routeFocus: { stops: null }, selectedBus: null }));
+  }, []);
+
+  const clearSelectedBus = useCallback(() => {
+    setFocus(prev => ({ ...prev, selectedBus: null }));
   }, []);
 
   return (
-    <MapContext.Provider value={{ focus, setMapFocus, setRouteFocus, setBusFocus, clearMapFocus }}>
+    <MapContext.Provider value={{ focus, setMapFocus, setRouteFocus, setBusFocus, setUserLocation, clearSelectedBus, clearMapFocus }}>
       {children}
     </MapContext.Provider>
   );

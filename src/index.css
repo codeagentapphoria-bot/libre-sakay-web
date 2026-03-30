@@ -4,16 +4,42 @@
 
 @layer base {
   :root {
-    --bus-pink: #f43f5e;
-    --bus-lime: #84cc16;
-    /* Redefine primary/secondary for global safety */
-    --primary: #f43f5e;
-    --secondary: #84cc16;
+    --primary: #4c6085;
+    --primary-foreground: #ffffff;
+    --secondary: #3f4e6c;
+    --secondary-foreground: #ffffff;
+    --background: #f8fafc;
+    --foreground: #31394d;
+    --card: #ffffff;
+    --card-foreground: #31394d;
+    --popover: #ffffff;
+    --popover-foreground: #31394d;
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;
+    --accent: #f1f5f9;
+    --accent-foreground: #31394d;
+    --destructive: #dc2626;
+    --destructive-foreground: #ffffff;
+    --border: #e2e8f0;
+    --input: #e2e8f0;
+    --ring: #4c6085;
+    --chart-1: #4c6085;
+    --chart-2: #7d94ae;
+    --chart-3: #aab9cb;
+    --chart-4: #d1d9e3;
+    --chart-5: #e8ecf1;
+    --radius: 0.75rem;
   }
 
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-slate-50 text-heading-700 antialiased;
+    font-family: 'Poppins', sans-serif;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    @apply font-semibold text-heading-700;
   }
 
   /* Custom Scrollbar */
@@ -36,13 +62,13 @@
   }
   
   .btn-primary {
-    @apply bg-bus-pink-600 text-white shadow-lg shadow-bus-pink-600/20 
-           hover:bg-bus-pink-700 hover:shadow-bus-pink-600/30 hover:-translate-y-0.5;
+    @apply bg-primary-600 text-white shadow-lg shadow-primary-600/20 
+           hover:bg-primary-700 hover:shadow-primary-600/30 hover:-translate-y-0.5;
   }
   
   .btn-secondary {
-    @apply bg-bus-lime-500 text-white shadow-lg shadow-bus-lime-500/20 
-           hover:bg-bus-lime-600 hover:shadow-bus-lime-500/30 hover:-translate-y-0.5;
+    @apply bg-heading-600 text-white shadow-lg shadow-heading-600/20 
+           hover:bg-heading-700 hover:shadow-heading-600/30 hover:-translate-y-0.5;
   }
   
   .btn-ghost {

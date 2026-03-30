@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, useMap, Marker, Polyline, Popup } from 'react-leaflet';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Polyline, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useBusLocations } from '../../api/queries';
 import BusMarker from './BusMarker';
 import LoadingSpinner from '../ui/LoadingSpinner';
-import { MapPin, ZoomIn, ZoomOut } from 'lucide-react';
+import { MapPin, ZoomIn, ZoomOut, Crosshair } from 'lucide-react';
 import { useMapFocus } from '../../contexts/MapContext';
 import type { Stop } from '../../types';
 import 'leaflet/dist/leaflet.css';
@@ -38,6 +38,30 @@ function createNumberedIcon(number: number) {
   });
 }
 
+const userLocationIcon = L.divIcon({
+  className: 'user-location-marker',
+  html: `<div style="
+    background: #22c55e;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  "></div><div style="
+    background: rgba(34, 197, 94, 0.2);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s infinite;
+  "></div>`,
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
 function MapController() {
   const { focus, clearMapFocus } = useMapFocus();
   const map = useMap();
@@ -58,6 +82,9 @@ function MapController() {
 
 function MapControlsInternal() {
   const map = useMap();
+  const { focus, setUserLocation } = useMapFocus();
+  const [isLocating, setIsLocating] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const handleZoomIn = () => {
     map.zoomIn();
@@ -67,21 +94,72 @@ function MapControlsInternal() {
     map.zoomOut();
   };
 
+  const handleGetLocation = useCallback(() => {
+    if (!navigator.geolocation) {
+      setLocationError('Geolocation not supported');
+      return;
+    }
+
+    setIsLocating(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLoc: [number, number] = [
+          position.coords.latitude,
+          position.coords.longitude
+        ];
+        setUserLocation(userLoc);
+        map.flyTo(userLoc, 15, { duration: 1 });
+        setIsLocating(false);
+      },
+      (error) => {
+        let message = 'Unable to get location';
+        if (error.code === error.PERMISSION_DENIED) {
+          message = 'Location access denied';
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          message = 'Location unavailable';
+        }
+        setLocationError(message);
+        setIsLocating(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000
+      }
+    );
+  }, [map, setUserLocation]);
+
   return (
     <div className="absolute top-4 right-4 z-[1000] flex flex-col gap-2">
+      <button
+        onClick={handleGetLocation}
+        disabled={isLocating}
+        className={`w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center transition-colors ${
+          isLocating ? 'bg-gray-100' : 'hover:bg-gray-50'
+        }`}
+        title={locationError || 'Get My Location'}
+      >
+        {isLocating ? (
+          <div className="w-5 h-5 border-2 border-primary-600 border-t-transparent rounded-full animate-spin" />
+        ) : (
+          <Crosshair className={`w-5 h-5 ${focus.userLocation ? 'text-green-600' : 'text-heading-700'}`} />
+        )}
+      </button>
       <button
         onClick={handleZoomIn}
         className="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
         title="Zoom In"
       >
-        <ZoomIn className="w-5 h-5 text-gray-700" />
+        <ZoomIn className="w-5 h-5 text-heading-700" />
       </button>
       <button
         onClick={handleZoomOut}
         className="w-10 h-10 bg-white rounded-lg shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
         title="Zoom Out"
       >
-        <ZoomOut className="w-5 h-5 text-gray-700" />
+        <ZoomOut className="w-5 h-5 text-heading-700" />
       </button>
     </div>
   );
@@ -123,6 +201,7 @@ export default function BusMap({ height = '100%' }: BusMapProps) {
   const { focus } = useMapFocus();
   const activeBuses = buses?.filter(b => b.latitude && b.longitude) ?? [];
   const routeStops = focus.routeFocus.stops;
+  const userLocation = focus.userLocation;
 
   return (
     <div className="relative w-full bg-gray-100" style={{ height }}>
@@ -146,12 +225,20 @@ export default function BusMap({ height = '100%' }: BusMapProps) {
           <BusMarker key={bus.id} busLocation={bus} />
         ))}
 
+        {userLocation && (
+          <Marker position={userLocation} icon={userLocationIcon}>
+            <Popup>
+              <div className="text-sm font-medium">Your Location</div>
+            </Popup>
+          </Marker>
+        )}
+
         {activeBuses.length === 0 && !isLoading && (
           <div className="absolute inset-0 flex items-center justify-center z-[1000] pointer-events-none">
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl p-6 text-center shadow-lg">
-              <MapPin className="w-10 h-10 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-600 font-semibold">No buses currently tracked</p>
-              <p className="text-gray-400 text-sm mt-1">Tap refresh to check again</p>
+              <MapPin className="w-10 h-10 text-heading-400 mx-auto mb-3" />
+              <p className="text-heading-600 font-semibold">No buses currently tracked</p>
+              <p className="text-heading-400 text-sm mt-1">Tap refresh to check again</p>
             </div>
           </div>
         )}
@@ -164,7 +251,7 @@ export default function BusMap({ height = '100%' }: BusMapProps) {
         <div className="absolute inset-0 bg-white flex items-center justify-center z-[1000]">
           <div className="text-center">
             <LoadingSpinner size="lg" />
-            <p className="text-gray-500 mt-3 font-medium">Loading buses...</p>
+            <p className="text-heading-500 mt-3 font-medium">Loading buses...</p>
           </div>
         </div>
       )}
