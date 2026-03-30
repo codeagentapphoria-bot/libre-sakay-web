@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { clsx } from 'clsx';
 import { Menu, X } from 'lucide-react';
+import InstallButton from '../ui/InstallButton';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -71,6 +72,9 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <div className="ml-2">
+              <InstallButton />
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -108,6 +112,9 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
+              <div className="mt-2 px-4">
+                <InstallButton />
+              </div>
             </nav>
           </div>
         )}
