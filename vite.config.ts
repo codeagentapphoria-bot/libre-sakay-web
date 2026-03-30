@@ -25,6 +25,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globIgnores: ['**/City Hall of Borongan in midday sun.png'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/api\./,
